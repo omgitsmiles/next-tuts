@@ -2,32 +2,37 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { Revenue } from '@/app/lib/definitions';
 import { generateYAxis } from '@/app/lib/utils';
+import { fetchRevenue } from '@/app/lib/data';
 
-interface ChartData {
-  yAxisLabels: string[];
-  topLabel: number;
-}
+// interface ChartData {
+//   yAxisLabels: string[];
+//   topLabel: number;
+// }
 
-export default function RevenueChart({
-  revenue,
-}: {
-  revenue: Revenue[];
-}) {
+export default async function RevenueChart() {
+  const revenue = await fetchRevenue()
+
   const chartHeight = 350;
+  const { yAxisLabels, topLabel } = generateYAxis(revenue)
 
-  const getChartData = (): ChartData | null => {
+
+  // const getChartData = (): ChartData | null => {
+  //   if (!revenue || revenue.length === 0) {
+  //     return null;
+  //   }
+
+  //   return generateYAxis(revenue);
+  // };
+
+  // const chartData = getChartData();
+
+  // if (!chartData) {
+  //   return <p className="mt-4 text-gray-400">No data available.</p>;
+  // }
+
     if (!revenue || revenue.length === 0) {
-      return null;
+      return <p className='mt-4 text-gray-400'>No data dawg.</p>
     }
-
-    return generateYAxis(revenue);
-  };
-
-  const chartData = getChartData();
-
-  if (!chartData) {
-    return <p className="mt-4 text-gray-400">No data available.</p>;
-  }
 
   return (
     <div className="w-full md:col-span-4">
@@ -40,7 +45,7 @@ export default function RevenueChart({
             className="mb-6 hidden flex-col justify-between text-sm text-gray-400 sm:flex"
             style={{ height: `${chartHeight}px` }}
           >
-            {chartData.yAxisLabels.map((label) => (
+            {yAxisLabels.map((label) => (
               <p key={label}>{label}</p>
             ))}
           </div>
@@ -49,7 +54,7 @@ export default function RevenueChart({
               <div
                 className="w-full rounded-md bg-blue-300"
                 style={{
-                  height: `${(chartHeight / chartData.topLabel) * month.revenue}px`,
+                  height: `${(chartHeight / topLabel) * month.revenue}px`,
                 }}
               ></div>
               <p className="-rotate-90 text-sm text-gray-400 sm:rotate-0">
